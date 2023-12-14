@@ -1,4 +1,7 @@
 library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(readr)
 
 TRIALS <- 1000000
 TARGET_CHAR <- 11
@@ -14,6 +17,7 @@ result_tar_char_obtained <- rep(NULL, TRIALS)
 result_non_5_star_obtained <- rep(NULL, TRIALS)
 result_usd_spent <- rep(NULL, TRIALS)
 
+set.seed(1234)
 get_orb_cost <- function(pull_num) {
   if (pull_num == 1L) {
     return(5L)
@@ -112,10 +116,7 @@ results_df <- tibble(orbs_spent = result_orbs_spent,
 
 summary(results_df)
 
-boxplot(results_df$usd_spent)
-
-library(ggplot2)
-library(gridExtra)
+write_csv(results_df, "sim_results.csv")
 
 my_palette <- c("#FF0000", "#0000FF", "#00FF00", "#888888")
 
@@ -132,22 +133,26 @@ my_theme <- theme_minimal() +
         axis.title.x = element_blank())
 
 plot1 <- ggplot(data = results_df) +
-  geom_boxplot(aes(y = orbs_spent), fill = my_palette[1]) +
+  geom_violin(aes(x = 1, y = orbs_spent), fill = my_palette[1]) +
+  stat_summary(aes(x = 1, y = mean(orbs_spent)), fun = mean, geom = "point", size = 5, color = "black", shape = 21, fill = "black") + # Add mean point
   labs(title = "Orbs Spent", y = "Orbs Spent") +
   my_theme
 
 plot2 <- ggplot(data = results_df) +
-  geom_boxplot(aes(y = stones_pulled), fill = my_palette[2]) +
+  geom_violin(aes(x = 1, y = stones_pulled), fill = my_palette[2]) +
+  stat_summary(aes(x = 1, y = mean(stones_pulled)), fun = mean, geom = "point", size = 5, color = "black", shape = 21, fill = "black") + # Add mean point
   labs(title = "Stones Pulled", y = "Stones Pulled") +
   my_theme
 
 plot3 <- ggplot(data = results_df) +
-  geom_boxplot(aes(y = non_target_5_stars), fill = my_palette[3]) +
+  geom_violin(aes(x = 1, y = non_target_5_stars), fill = my_palette[3]) +
+  stat_summary(aes(x = 1, y = mean(non_target_5_stars)), fun = mean, geom = "point", size = 5, color = "black", shape = 21, fill = "black") + # Add mean point
   labs(title = "Non-Target 5 Stars", y = "Non-Target 5 Stars") +
   my_theme
 
 plot4 <- ggplot(data = results_df) +
-  geom_boxplot(aes(y = usd_spent), fill = my_palette[4]) +
+  geom_violin(aes(x = 1, y = usd_spent), fill = my_palette[4]) +
+  stat_summary(aes(x = 1, y = mean(usd_spent)), fun = mean, geom = "point", size = 5, color = "black", shape = 21, fill = "black") + # Add mean point
   labs(title = "USD Spent", y = "USD Spent") +
   my_theme
 
